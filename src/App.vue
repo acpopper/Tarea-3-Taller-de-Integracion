@@ -1,7 +1,11 @@
 <template>
+<div>
+  <p v-if="isConnected">We're connected to the server!</p>
+</div>
   <div>
     <BotonInfo @toggle-show-vuelos="mostrarVuelos" />
   </div>
+  <!-- pequeña nota display:flex; align-items: center; on <row> -->
   <div class="container" style="display: flex" v-show="showVuelos">
     <Vuelos :vuelos="vuelos" />
   </div>
@@ -25,10 +29,21 @@ export default {
       this.showVuelos = true
     }
   },
+  sockets: {
+    connect() {
+      // Fired when the socket connects.
+      this.isConnected = true;
+    },
+
+    disconnect() {
+      this.isConnected = false;
+    },
+  },
   data() {
     return {
       vuelos: [],
-      showVuelos: false
+      showVuelos: false,
+      isConnected: false
     }
   },
   created() {
