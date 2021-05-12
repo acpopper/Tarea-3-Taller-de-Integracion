@@ -1,7 +1,5 @@
 <template>
-<div>
-  <p v-if="isConnected">We're connected to the server!</p>
-</div>
+
   <div>
     <BotonInfo @toggle-show-vuelos="mostrarVuelos" />
   </div>
@@ -17,6 +15,10 @@
 <script>
 import BotonInfo from './components/BotonInfo'
 import Vuelos from './components/Vuelos'
+const io = require("socket.io-client");
+
+const socket = io("wss://tarea-3-websocket.2021-1.tallerdeintegracion.cl",
+ {path: '/flights'});
 
 export default {
   name: 'App',
@@ -26,19 +28,11 @@ export default {
   },
   methods: {
     mostrarVuelos() {
+      socket.emit('FLIGHTS')
       this.showVuelos = true
-    }
-  },
-  sockets: {
-    connect() {
-      // Fired when the socket connects.
-      this.isConnected = true;
-    },
-
-    disconnect() {
-      this.isConnected = false;
     },
   },
+  
   data() {
     return {
       vuelos: [],
@@ -47,38 +41,8 @@ export default {
     }
   },
   created() {
-    this.vuelos = [
-      {
-        code: 1,
-        airline: 'American Airlines',
-        origin: [1.1, 1.2],
-        destination: [10.1, 10.2],
-        plane: 'Model x',
-        seats: 100,
-        passengers: [{name: 'Alan', age: 25},
-        {name: 'Dennis', age: 23}]
-      },
-      {
-        code: 2,
-        airline: 'United',
-        origin: [2.1, 2.2],
-        destination: [20.1, 20.2],
-        plane: 'Model y',
-        seats: 200,
-        passengers: [{name: 'Pony', age: 25},
-        {name: 'Salvaje', age: 23}]
-      },
-      {
-        code: 3,
-        airline: 'Lufthansa',
-        origin: [3.1, 3.2],
-        destination: [30.1, 30.2],
-        plane: 'Model z',
-        seats: 300,
-        passengers: [{name: 'Johnny', age: 25},
-        {name: 'Bravo', age: 23}]
-      }
-    ]
+    socket.on('FLIGHTS', (vls) => {this.vuelos=vls;})
+    
   }
 }
 </script>

@@ -1,9 +1,14 @@
 <template>
-  <div class="vuelo">
+  <div @click="mostrarPasajeros(vuelo)" class="vuelo">
     <h3>
       {{ vuelo.airline }}
     </h3>
-    <p>{{vuelo.plane}}</p>
+    <p>{{vuelo.plane}}: {{vuelo.code}}</p>
+    <p>Seats: {{vuelo.seats}}</p>
+    <p>From: {{vuelo.origin}}</p>
+    <p>To: {{vuelo.destination}}</p>
+    <h5>Click for passengers</h5>
+    
   </div>
 </template>
 
@@ -13,6 +18,17 @@ export default {
   props: {
     vuelo: Object,
   },
+  methods: {
+    mostrarPasajeros(vuelo) {
+      var texto= ''
+      var i;
+      for (i = 0; i < vuelo.passengers.length; i++) {
+        texto += vuelo.passengers[i].name + " Age: "+ vuelo.passengers[i].age + "\n";
+      }
+      window.alert('*Passengers* \n' + texto)
+      texto = ''
+    }
+  }
 }
 </script>
 
@@ -24,7 +40,11 @@ export default {
   cursor: pointer;
 }
 .vuelo h3 {
+  font-size: 20px;
   align-items: center;
   justify-content: space-between;
+}
+p {
+  font-size: 14px;
 }
 </style>
