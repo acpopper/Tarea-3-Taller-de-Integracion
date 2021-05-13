@@ -1,5 +1,7 @@
 <template>
-
+  <div class="chatt">
+    <Chat @enviar-mensaje="enviarMensaje" />
+  </div>
   <div>
     <BotonInfo @toggle-show-vuelos="mostrarVuelos" />
   </div>
@@ -14,6 +16,7 @@
 
 <script>
 import BotonInfo from './components/BotonInfo'
+import Chat from './components/Chat'
 import Vuelos from './components/Vuelos'
 const io = require("socket.io-client");
 
@@ -24,13 +27,20 @@ export default {
   name: 'App',
   components: {
     BotonInfo,
-    Vuelos
+    Vuelos,
+    Chat
   },
   methods: {
     mostrarVuelos() {
       socket.emit('FLIGHTS')
       this.showVuelos = true
     },
+    enviarMensaje(msg) {
+      socket.emit('CHAT', {name: 'Alan', message: msg});
+      console.log(msg)
+
+    }
+
   },
   
   data() {
@@ -41,7 +51,9 @@ export default {
     }
   },
   created() {
-    socket.on('FLIGHTS', (vls) => {this.vuelos=vls;})
+    socket.on('FLIGHTS', (vls) => {this.vuelos=vls;}),
+    socket.on('CHAT', (msg) => {
+      console.log(msg.message);})
     
   }
 }
@@ -66,6 +78,17 @@ body {
   min-height: 100px;
   border: 1px solid steelblue;
   padding: 30px;
+  border-radius: 5px;
+}
+.chatt {
+  position:relative;
+  overflow: scroll;
+  align-items: center;
+  max-width: 50%;
+  margin: 10px auto;
+  overflow: auto;
+  min-height: 100px;
+  border: 2px solid rgb(70, 154, 180);
   border-radius: 5px;
 }
 .btn {
