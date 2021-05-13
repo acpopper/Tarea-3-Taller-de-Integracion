@@ -21,9 +21,10 @@ export default {
   methods: {
     mostrarPasajeros(vuelo) {
       var texto= ''
+      texto += 'Name | Age\n'
       var i;
       for (i = 0; i < vuelo.passengers.length; i++) {
-        texto += vuelo.passengers[i].name + " Age: "+ vuelo.passengers[i].age + "\n";
+        texto += vuelo.passengers[i].name + " | "+ vuelo.passengers[i].age + "\n";
       }
       window.alert('*Passengers* \n' + texto)
       texto = ''
