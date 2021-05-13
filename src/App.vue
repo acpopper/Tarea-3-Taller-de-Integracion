@@ -1,5 +1,8 @@
 <template>
-  <div class="chatt">
+  <div v-show="!loggedIn" style="text-align: center;">
+    <Login @name-login="login" />
+  </div>
+  <div v-show="loggedIn" class="chatt">
     <Chat @enviar-mensaje="enviarMensaje" />
   </div>
   <div>
@@ -18,6 +21,7 @@
 import BotonInfo from './components/BotonInfo'
 import Chat from './components/Chat'
 import Vuelos from './components/Vuelos'
+import Login from './components/Login'
 const io = require("socket.io-client");
 
 const socket = io("wss://tarea-3-websocket.2021-1.tallerdeintegracion.cl",
@@ -28,7 +32,8 @@ export default {
   components: {
     BotonInfo,
     Vuelos,
-    Chat
+    Chat,
+    Login
   },
   methods: {
     mostrarVuelos() {
@@ -36,9 +41,12 @@ export default {
       this.showVuelos = true
     },
     enviarMensaje(msg) {
-      socket.emit('CHAT', {name: 'Alan', message: msg});
-      console.log(msg)
-
+      socket.emit('CHAT', {name: this.nombre, message: msg});
+    },
+    login(nombre) {
+      this.loggedIn = true,
+      this.nombre = nombre
+      console.log('Logged in as ' + this.nombre)
     }
 
   },
@@ -47,13 +55,15 @@ export default {
     return {
       vuelos: [],
       showVuelos: false,
-      isConnected: false
+      isConnected: false,
+      loggedIn: false,
+      nombre: ''
     }
   },
   created() {
     socket.on('FLIGHTS', (vls) => {this.vuelos=vls;}),
     socket.on('CHAT', (msg) => {
-      console.log(msg.message);})
+      console.log(this.nombre + ': ' + msg.message);})
     
   }
 }
