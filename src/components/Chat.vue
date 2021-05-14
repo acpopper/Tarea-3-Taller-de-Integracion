@@ -1,11 +1,8 @@
 <template>
-    <div>
-        <ul id="messages"></ul>
-        <form id="form" @submit.prevent="onSubmit">
-            <input id="input" autocomplete="off" v-model="message" name="message" />
-            <button type="submit" class="btn">Send</button>
-        </form>
-    </div>
+    <form id="form" @submit.prevent="onSubmit">
+        <input id="input" autocomplete="off" v-model="message" name="message" />
+        <button type="submit" class="btn">Send</button>
+    </form>
     
 </template>
 

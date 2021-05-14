@@ -2,8 +2,12 @@
   <div v-show="!loggedIn" style="text-align: center;">
     <Login @name-login="login" />
   </div>
-  <div v-show="loggedIn" class="chatt">
-    <Chat @enviar-mensaje="enviarMensaje" />
+  <div v-show="loggedIn" style="position:relative">
+  <div class="chatt" id="myDiv">
+    <ul id="messages"></ul>
+    <!-- the chat is a feature, not a bug -->
+    <Chat @enviar-mensaje="enviarMensaje" style="position: relative; bottom: 0; right: 0;"/>
+  </div>
   </div>
   <div>
     <BotonInfo @toggle-show-vuelos="mostrarVuelos" />
@@ -14,7 +18,6 @@
   </div>
   
   
-
 </template>
 
 <script>
@@ -26,6 +29,8 @@ const io = require("socket.io-client");
 
 const socket = io("wss://tarea-3-websocket.2021-1.tallerdeintegracion.cl",
  {path: '/flights'});
+
+
 
 export default {
   name: 'App',
@@ -46,7 +51,6 @@ export default {
     login(nombre) {
       this.loggedIn = true,
       this.nombre = nombre
-      console.log('Logged in as ' + this.nombre)
     }
 
   },
@@ -63,10 +67,17 @@ export default {
   created() {
     socket.on('FLIGHTS', (vls) => {this.vuelos=vls;}),
     socket.on('CHAT', (msg) => {
-      console.log(this.nombre + ': ' + msg.message);})
+      var messages = document.getElementById('messages');
+      var item = document.createElement('li')
+      item.textContent = msg.name + ': ' + msg.message
+      messages.appendChild(item)
+      var myDiv = document.getElementById("myDiv")
+      myDiv.scrollTop = myDiv.scrollHeight
+      ;})
     
   }
 }
+
 </script>
 
 <style>
@@ -97,7 +108,7 @@ body {
   max-width: 50%;
   margin: 10px auto;
   overflow: auto;
-  min-height: 100px;
+  height: 300px;
   border: 2px solid rgb(70, 154, 180);
   border-radius: 5px;
 }
@@ -124,5 +135,7 @@ body {
   display: block;
   width: 100%;
 }
-
+  #messages { list-style-type: none; margin: 0; padding: 0; }
+  #messages > li { padding: 0.5rem 1rem; }
+  #messages > li:nth-child(odd) { background: #efefef; }
 </style>
