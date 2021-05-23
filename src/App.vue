@@ -1,14 +1,21 @@
 <template>
-  <div v-show="!loggedIn" style="text-align: center;">
-    <Login @name-login="login" />
+  <div style="display: flex; align-items:center">
+    <div style="text-align: center">
+      <Mapa/>
+    </div>
+      <div v-show="!loggedIn" style="text-align: center;">
+        <Login @name-login="login" />
+      </div>
+      <div v-show="loggedIn" style="position:relative">
+        <div class="chatt" id="myDiv">
+          <ul id="messages"></ul>
+          <!-- the chat is a feature, not a bug -->
+          <Chat @enviar-mensaje="enviarMensaje" style="position: relative; bottom: 0; right: 0;"/>
+        </div>
+      </div>
+  
   </div>
-  <div v-show="loggedIn" style="position:relative">
-  <div class="chatt" id="myDiv">
-    <ul id="messages"></ul>
-    <!-- the chat is a feature, not a bug -->
-    <Chat @enviar-mensaje="enviarMensaje" style="position: relative; bottom: 0; right: 0;"/>
-  </div>
-  </div>
+  
   <div>
     <BotonInfo @toggle-show-vuelos="mostrarVuelos" />
   </div>
@@ -25,6 +32,8 @@ import BotonInfo from './components/BotonInfo'
 import Chat from './components/Chat'
 import Vuelos from './components/Vuelos'
 import Login from './components/Login'
+import Mapa from './components/Mapa'
+
 const io = require("socket.io-client");
 
 const socket = io("wss://tarea-3-websocket.2021-1.tallerdeintegracion.cl",
@@ -38,7 +47,8 @@ export default {
     BotonInfo,
     Vuelos,
     Chat,
-    Login
+    Login,
+    Mapa
   },
   methods: {
     mostrarVuelos() {
@@ -105,7 +115,7 @@ body {
   position:relative;
   overflow: scroll;
   align-items: center;
-  max-width: 50%;
+  width: 500px;
   margin: 10px auto;
   overflow: auto;
   height: 300px;
