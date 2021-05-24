@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex; align-items:center">
     <div style="text-align: center">
-      <Mapa/>
+      <Mapa :codes="codes" />
     </div>
     <h2 style="width: 60px"></h2>
     <div v-show="!loggedIn" style="text-align: center;">
@@ -73,12 +73,14 @@ export default {
       isConnected: false,
       loggedIn: false,
       nombre: '',
-      codes: Set
+      codes: Set,
+      new_pos: Object
     }
   },
   created() {
-    this.codes = new Set(),
+    this.codes = new Set();
     socket.on('FLIGHTS', (vls) => {this.vuelos=vls;}),
+
     socket.on('CHAT', (msg) => {
       var messages = document.getElementById('messages');
       var item = document.createElement('li')
@@ -86,13 +88,14 @@ export default {
       messages.appendChild(item)
       var myDiv = document.getElementById("myDiv")
       myDiv.scrollTop = myDiv.scrollHeight
-
       var date = new Date(msg.date).toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3")
       console.log(date)
       ;}),
-      socket.on('POSITION', (pos) => {
-        this.codes.add(pos.code)
-        ;})
+
+    socket.on('POSITION', (pos) => {
+      this.codes.add(pos.code)
+      console.log(this.codes)
+      ;})
     
   }
 }
