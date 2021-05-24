@@ -17,28 +17,31 @@ export default {
 
   },
   methods: {
-    actualizar() {
-      
+    actualizar(map) {
+      this.posiciones.forEach(function (marker) {
+      // Add markers to the map.
+      new mapboxgl.Marker()
+      var correct = [marker.position[1], marker.position[0]]
+      // console.log(correct)
+      .setLngLat(correct)
+      // we
+      .addTo(map);
+      });
     }
   },
   mounted() {
     mapboxgl.accessToken = this.accessToken;
-
-    var map = new mapboxgl.Map({
+    const map = new mapboxgl.Map({
       container: "mapContainer",
       style: "mapbox://styles/mapbox/streets-v11",
       center: [-70.640698, -33.445043],
       zoom: 8,
     });
-    
-    this.$nextTick(function () {
-      new mapboxgl.Marker()
-      .setLngLat([-70.640698, -33.445043])
-      .addTo(map);
-    })
+    this.actualizar(map)
   },
   
 };
+
 </script>
 
 <style scoped>

@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex; align-items:center">
     <div style="text-align: center">
-      <Mapa  :posiciones="posiciones" />
+      <Mapa :posiciones="posiciones" />
     </div>
     <h2 style="width: 60px"></h2>
     <div v-show="!loggedIn" style="text-align: center;">
@@ -97,6 +97,7 @@ export default {
 
     socket.on('POSITION', (pos) => {
       this.actualizar(pos)
+      // console.log(this.posiciones)
       ;})
     
   }
