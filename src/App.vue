@@ -3,16 +3,17 @@
     <div style="text-align: center">
       <Mapa/>
     </div>
-      <div v-show="!loggedIn" style="text-align: center;">
-        <Login @name-login="login" />
+    <h2 style="width: 60px"></h2>
+    <div v-show="!loggedIn" style="text-align: center;">
+      <Login @name-login="login" />
+    </div>
+    <div v-show="loggedIn" style="position:relative">
+      <div class="chatt" id="myDiv">
+        <ul id="messages" style="word-wrap: break-word"></ul>
+        <!-- the chat is a feature, not a bug -->
+        <Chat @enviar-mensaje="enviarMensaje" style="position: relative; bottom: 0; right: 0;"/>
       </div>
-      <div v-show="loggedIn" style="position:relative">
-        <div class="chatt" id="myDiv">
-          <ul id="messages"></ul>
-          <!-- the chat is a feature, not a bug -->
-          <Chat @enviar-mensaje="enviarMensaje" style="position: relative; bottom: 0; right: 0;"/>
-        </div>
-      </div>
+    </div>
   
   </div>
   
@@ -71,10 +72,12 @@ export default {
       showVuelos: false,
       isConnected: false,
       loggedIn: false,
-      nombre: ''
+      nombre: '',
+      codes: Set
     }
   },
   created() {
+    this.codes = new Set(),
     socket.on('FLIGHTS', (vls) => {this.vuelos=vls;}),
     socket.on('CHAT', (msg) => {
       var messages = document.getElementById('messages');
@@ -83,7 +86,13 @@ export default {
       messages.appendChild(item)
       var myDiv = document.getElementById("myDiv")
       myDiv.scrollTop = myDiv.scrollHeight
-      ;})
+
+      var date = new Date(msg.date).toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3")
+      console.log(date)
+      ;}),
+      socket.on('POSITION', (pos) => {
+        this.codes.add(pos.code)
+        ;})
     
   }
 }
@@ -113,11 +122,10 @@ body {
 }
 .chatt {
   position:relative;
-  overflow: scroll;
   align-items: center;
   width: 500px;
   margin: 10px auto;
-  overflow: auto;
+  overflow-y: auto;
   height: 300px;
   border: 2px solid rgb(70, 154, 180);
   border-radius: 5px;
@@ -145,7 +153,7 @@ body {
   display: block;
   width: 100%;
 }
-  #messages { list-style-type: none; margin: 0; padding: 0; }
+  #messages { list-style-type: none; margin: 0; padding: 0;}
   #messages > li { padding: 0.5rem 1rem; }
   #messages > li:nth-child(odd) { background: #efefef; }
 </style>
