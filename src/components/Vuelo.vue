@@ -1,5 +1,5 @@
 <template>
-  <div @click="mostrarPasajeros(vuelo)" class="vuelo">
+  <div @click="mostrarPasajeros()" class="vuelo">
     <h3>
       {{ vuelo.airline }}
     </h3>
@@ -19,12 +19,12 @@ export default {
     vuelo: Object,
   },
   methods: {
-    mostrarPasajeros(vuelo) {
+    mostrarPasajeros() {
       var texto= ''
       texto += 'Name | Age\n'
       var i;
-      for (i = 0; i < vuelo.passengers.length; i++) {
-        texto += vuelo.passengers[i].name + " | "+ vuelo.passengers[i].age + "\n";
+      for (i = 0; i < this.vuelo.passengers.length; i++) {
+        texto += this.vuelo.passengers[i].name + " | "+ this.vuelo.passengers[i].age + "\n";
       }
       window.alert('*Passengers* \n' + texto)
       texto = ''

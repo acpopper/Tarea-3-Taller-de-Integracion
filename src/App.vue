@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex; align-items:center">
     <div style="text-align: center">
-      <Mapa :codes="codes" />
+      <Mapa  :posiciones="posiciones" />
     </div>
     <h2 style="width: 60px"></h2>
     <div v-show="!loggedIn" style="text-align: center;">
@@ -62,6 +62,11 @@ export default {
     login(nombre) {
       this.loggedIn = true,
       this.nombre = nombre
+    },
+    actualizar(vuelo) {
+      this.posiciones.unshift(vuelo)
+      this.posiciones = this.posiciones.filter((thing, index, self) => 
+      self.findIndex(t => t.code === thing.code) === index)
     }
 
   },
@@ -73,12 +78,10 @@ export default {
       isConnected: false,
       loggedIn: false,
       nombre: '',
-      codes: Set,
-      new_pos: Object
+      posiciones: []
     }
   },
   created() {
-    this.codes = new Set();
     socket.on('FLIGHTS', (vls) => {this.vuelos=vls;}),
 
     socket.on('CHAT', (msg) => {
@@ -93,8 +96,7 @@ export default {
       ;}),
 
     socket.on('POSITION', (pos) => {
-      this.codes.add(pos.code)
-      console.log(this.codes)
+      this.actualizar(pos)
       ;})
     
   }
