@@ -1,7 +1,8 @@
 <template>
   <div style="display: flex; align-items:center">
     <div style="text-align: center">
-      <Mapa :posiciones="posiciones" />
+      <!-- <Mapa :posiciones="posiciones" /> -->
+        <div id="mapContainer" class="basemap"></div>
     </div>
     <h2 style="width: 60px"></h2>
     <div v-show="!loggedIn" style="text-align: center;">
@@ -33,7 +34,10 @@ import BotonInfo from './components/BotonInfo'
 import Chat from './components/Chat'
 import Vuelos from './components/Vuelos'
 import Login from './components/Login'
-import Mapa from './components/Mapa'
+
+
+import mapboxgl from "mapbox-gl";
+
 
 const io = require("socket.io-client");
 
@@ -48,8 +52,7 @@ export default {
     BotonInfo,
     Vuelos,
     Chat,
-    Login,
-    Mapa
+    Login
   },
   methods: {
     mostrarVuelos() {
@@ -63,10 +66,20 @@ export default {
       this.loggedIn = true,
       this.nombre = nombre
     },
-    actualizar(vuelo) {
-      this.posiciones.unshift(vuelo)
-      this.posiciones = this.posiciones.filter((thing, index, self) => 
-      self.findIndex(t => t.code === thing.code) === index)
+    fuckyeah(marker) {
+      var el = document.createElement('div');
+      el.className = 'marker';
+      el.style.backgroundColor = 'yellow';
+      el.style.width = '25px';
+      el.style.height = '25px';
+      
+      // Add markers to the map.
+      var correct = [marker.position[1], marker.position[0]]
+      new mapboxgl.Marker(el)
+      .setLngLat(correct)
+      .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+        .setHTML('<h3>' + marker.code + '</h3>'))
+      .addTo(this.map);
     }
 
   },
@@ -78,27 +91,43 @@ export default {
       isConnected: false,
       loggedIn: false,
       nombre: '',
-      posiciones: []
+      posiciones: [],
+      accessToken: "pk.eyJ1IjoiYWNwb3BwZXIiLCJhIjoiY2twMHRjN2ptMHZqMjJ2cHJ4N3pyZ2EyZCJ9.IiAVirZxsxsvJFQIdGf3hg",
+      map: Object
     }
   },
+  mounted() {
+    mapboxgl.accessToken = this.accessToken;
+    this.map = new mapboxgl.Map({
+      container: "mapContainer",
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [-70.640698, -33.445043],
+      zoom: 3,
+    });
+  },
   created() {
+
     socket.on('FLIGHTS', (vls) => {this.vuelos=vls;}),
 
     socket.on('CHAT', (msg) => {
       var messages = document.getElementById('messages');
       var item = document.createElement('li')
-      item.textContent = msg.name + ': ' + msg.message
+      var date = new Date(msg.date).toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3")
+      item.textContent = '(' + date + ')' + msg.name + ': ' + msg.message
       messages.appendChild(item)
       var myDiv = document.getElementById("myDiv")
       myDiv.scrollTop = myDiv.scrollHeight
-      var date = new Date(msg.date).toLocaleTimeString().replace(/([\d]+:[\d]{2})(:[\d]{2})(.*)/, "$1$3")
+      
       console.log(date)
       ;}),
 
-    socket.on('POSITION', (pos) => {
-      this.actualizar(pos)
-      // console.log(this.posiciones)
-      ;})
+    socket.on('POSITION', (vuelo) => {
+      this.posiciones.unshift(vuelo)
+      this.posiciones = this.posiciones.filter((thing, index, self) => 
+      self.findIndex(t => t.code === thing.code) === index)
+
+      this.posiciones.forEach(this.fuckyeah);
+      })
     
   }
 }
@@ -158,6 +187,25 @@ body {
 .btn-block {
   display: block;
   width: 100%;
+}
+.basemap {
+  width: 800px;
+  height: 400px;
+  padding: 30px;
+}
+.marker {
+  height: 25px;
+  width: 25px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+}
+.mapboxgl-popup {
+  max-width: 200px;
+}
+.mapboxgl-popup-content {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
 }
   #messages { list-style-type: none; margin: 0; padding: 0;}
   #messages > li { padding: 0.5rem 1rem; }
